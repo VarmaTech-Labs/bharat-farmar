@@ -5,7 +5,7 @@ import imgThree from "../assets/images/on3.jpg";
 export const onboardingData = [
   {
     img: imgOne,
-    title: "Welcome to Bharat Kisan 🇮🇳",
+    title: "Welcome to Bharat Farmer 🇮🇳",
     subtitle:
       "Your smart farming partner Get daily weather forecasts, AI-based crop care tips, and the latest farming news. Stay informed, plan better, and grow smarter.",
     buttonText: "Next",
