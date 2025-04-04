@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "156973700948",
+    "project_id": "bharat-farmer",
+    "storage_bucket": "bharat-farmer.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:156973700948:android:9edee284e93e5d0c4f1ac1",
+        "android_client_info": {
+          "package_name": "com.arvind_varma.client"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCS97z0d3fary1CDHcPXpupoKjANOOlJXQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

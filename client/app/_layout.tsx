@@ -18,10 +18,10 @@ export default function Layout() {
       const { status: locationStatus } = await Location.requestForegroundPermissionsAsync();
       console.log("📍 Location Permission:", locationStatus);
 
-      // if (Platform.OS === 'android') {
-      //   const result = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
-      //   console.log("📂 Storage Permission Granted:", result.granted);
-      // }
+      // google admob ads 
+      
+
+       
     } catch (error) {
       console.error("❌ Error requesting permissions:", error);
     }
@@ -33,6 +33,7 @@ export default function Layout() {
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
+      
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="login" options={{ headerShown: false }} />
     </Stack>
