@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FDFDFD",
   },
   logo: {
-    width: width - 60,
+    width: width - 70,
     height: 240,
     alignSelf: "center",
     marginBottom: 0,

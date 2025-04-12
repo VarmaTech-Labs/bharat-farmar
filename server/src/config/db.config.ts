@@ -10,7 +10,7 @@ const dbConnection = async (): Promise<void> => {
     log.info('Database connection established and ready 🔌');
   } catch (error:any) {
     log.error(`MongoDB connection failed! ${error.message}`);
-    // process.exit(1);
+    process.exit(1);
   }
 };
 

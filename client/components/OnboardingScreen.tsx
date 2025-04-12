@@ -22,23 +22,19 @@ export default function OnboardingScreen() {
   const router = useRouter();
   const flatListRef = useRef<FlatList>(null);
 
-  const handleNext = () => {
+  const handleNext = async() => {
     if (active < onboardingData.length - 1) {
       flatListRef.current?.scrollToIndex({ index: active + 1 });
     } else {
-      AsyncStorage.setItem("onboardingCompleted", "true");
+      await AsyncStorage.setItem("onboarding", "completed");
       router.push("/login");
     }
   };
 
-  const handlePrevious = () => {
-    if (active > 0) {
-      flatListRef.current?.scrollToIndex({ index: active - 1 });
-    }
-  };
 
-  const skipHandler = () => {
-    AsyncStorage.setItem("onboardingCompleted", "true");
+
+  const skipHandler = async() => {
+    await AsyncStorage.setItem("onboarding", "completed");
     router.push("/login");
   };
 
@@ -46,6 +42,7 @@ export default function OnboardingScreen() {
     const index = Math.round(e.nativeEvent.contentOffset.x / width);
     setActive(index);
   };
+
 
   const renderItem = ({ item }: any) => (
     <View style={styles.content}>

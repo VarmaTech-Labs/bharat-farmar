@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   logo: {
-    width: width - 60,
+    width: width - 70,
     height: 250,
     alignSelf: "center",
     marginBottom: 0,
