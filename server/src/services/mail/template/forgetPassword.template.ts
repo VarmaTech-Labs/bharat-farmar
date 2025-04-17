@@ -1,4 +1,4 @@
-const generateForgetPasswordEmail = (username: string, otp: string): string => {
+ const forgetPasswordTemplate = (username: string, otp: string): string => {
     return `
   <!DOCTYPE html>
   <html lang="hi">
@@ -107,5 +107,5 @@ const generateForgetPasswordEmail = (username: string, otp: string): string => {
     `;
   };
   
-  export default generateForgetPasswordEmail;
+  export default forgetPasswordTemplate;
   

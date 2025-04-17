@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,25 +9,66 @@ import {
   Alert,
   Image,
   Animated,
-  Easing,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { userSignup } from "@/utils/api/userApis";
+import { showErrorDialog, showErrorToast } from "@/utils/alertNotifier";
+import ThreeDotLoader from "@/components/ThreeDotLoader";
 
 const { width, height } = Dimensions.get("window");
 
-export default function SignUpScreen() {
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
-  const [step, setStep] = useState("details");
-  const [nameError, setNameError] = useState(false);
-  const [phoneError, setPhoneError] = useState(false);
-  const [otpError, setOtpError] = useState(false);
-  
-  const fadeAnim = useState(new Animated.Value(0))[0];
-  const shakeAnim = useState(new Animated.Value(0))[0]; // Shake animation
 
+
+const InputField = ({
+  label,
+  value,
+  setValue,
+  error,
+  placeholder,
+  keyboardType = "default",
+  isEmail = false,
+  shakeAnim,
+}: {
+  label: string;
+  value: string;
+  setValue: (text: string) => void;
+  error: boolean;
+  placeholder: string;
+  keyboardType?: any;
+  isEmail?: boolean;
+  shakeAnim?: Animated.Value;
+}) => (
+  <>
+    <Text style={styles.label}>{label}</Text>
+    <Animated.View style={error && shakeAnim ? { transform: [{ translateX: shakeAnim }] } : {}}>
+      <TextInput
+        style={[
+          styles.input,
+          value.length === 0 ? styles.inputDefault : error ? styles.inputError : styles.inputValid,
+        ]}
+        placeholder={placeholder}
+        keyboardType={keyboardType}
+        autoCapitalize={isEmail ? "none" : "sentences"}
+        value={value}
+        onChangeText={setValue}
+      />
+    </Animated.View>
+    {error && <Text style={styles.errorText}>{label} is not valid</Text>}
+  </>
+);
+
+ 
+const SignUpForm = () => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [nameError, setNameError] = useState(false);
+  const [emailError, setEmailError] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const shakeAnim = useState(new Animated.Value(0))[0];
   const router = useRouter();
+
+  const isValidEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const shakeInput = () => {
     Animated.sequence([
@@ -38,154 +79,75 @@ export default function SignUpScreen() {
     ]).start();
   };
 
-  const handleChangeName = (text: string) => {
-    setName(text);
-    if (text.length === 0) {
-      setNameError(false);
-    } else {
-      setNameError(text.trim().length < 3);
-    }
-  };
-
-  const handleChangePhone = (text: string) => {
-    setPhone(text);
-    if (text.length === 0) {
-      setPhoneError(false);
-    } else {
-      setPhoneError(text.length !== 10);
-    }
-  };
-
-  const handleChangeOtp = (text: string) => {
-    setOtp(text);
-    if (text.length === 0) {
-      setOtpError(false);
-    } else {
-      setOtpError(text.length !== 6);
-    }
-  };
-
-  const handleSendOTP = async () => {
+  const handleSignUp = async () => {
     let valid = true;
-
+  
     if (name.trim().length < 3) {
       setNameError(true);
-      shakeInput();
       valid = false;
+    } else {
+      setNameError(false);
     }
-
-    if (phone.length !== 10) {
-      setPhoneError(true);
-      shakeInput();
+  
+    if (!isValidEmail(email)) {
+      setEmailError(true);
       valid = false;
+    } else {
+      setEmailError(false);
     }
-
-    if (!valid) return;
-
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 500,
-      easing: Easing.ease,
-      useNativeDriver: true,
-    }).start();
-
-    try {
-      setStep("otp");
-      Alert.alert("OTP Sent", "Check your phone for the OTP.");
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Error", "Failed to send OTP. Try again.");
-    }
-  };
-
-  const handleSignUp = () => {
-    if (otp.length !== 6) {
-      Alert.alert("Invalid OTP", "Please enter a 6-digit OTP.");
+  
+    if (!valid) {
       shakeInput();
       return;
     }
-    Alert.alert("Signup Successful");
-    router.push("/home" as any);
+  
+    setLoading(true);
+  
+    try {
+      const result:any = await userSignup({ name, email });
+  
+      if (result.success) {
+        router.replace("/login");
+      } else {
+        showErrorDialog('Signup Failed', result.message || 'Something went wrong.');
+      }
+    } catch {
+      Alert.alert("Error", "Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
-
+  
   return (
-    <View style={styles.container}>
-      <Image style={styles.logo} source={require("../assets/images/farmer-logo.png")} />
+    <>
+      <InputField
+        label="Full Name"
+        value={name}
+        setValue={(text) => {
+          setName(text.trim());
+          setNameError(text.trim().length > 0 && text.trim().length < 3);
+        }}
+        error={nameError}
+        placeholder="Enter your full name"
+      />
 
-      <Text style={styles.title}>Create an Account</Text>
-      <Text style={styles.subtitle}>Sign up to access exclusive farmer services.</Text>
+      <InputField
+        label="Email Address"
+        value={email}
+        setValue={(text) => {
+          setEmail(text.trim());
+          setEmailError(text.length > 0 && !isValidEmail(text));
+        }}
+        error={emailError}
+        placeholder="Enter your email"
+        keyboardType="email-address"
+        isEmail
+        shakeAnim={shakeAnim}
+      />
 
-      {step === "details" ? (
-        <>
-          <Text style={styles.label}>Full Name</Text>
-          <Animated.View style={nameError && {  transform: [{ translateX: shakeAnim }] }}>
-            <TextInput
-              style={[
-                styles.input,
-                name.length === 0
-                  ? styles.inputDefault
-                  : nameError
-                  ? styles.inputError
-                  : styles.inputValid,
-              ]}
-              placeholder="Enter your full name"
-              value={name}
-              onChangeText={handleChangeName}
-            />
-          </Animated.View>
-          {nameError && <Text style={styles.errorText}>Name must be at least 3 characters</Text>}
-
-          <Text style={styles.label}>Mobile Number</Text>
-          <Animated.View style={phoneError && { transform: [{ translateX: shakeAnim }] }}>
-            <TextInput
-              style={[
-                styles.input,
-                phone.length === 0
-                  ? styles.inputDefault
-                  : phoneError
-                  ? styles.inputError
-                  : styles.inputValid,
-              ]}
-              placeholder="Enter your phone number"
-              keyboardType="number-pad"
-              maxLength={10}
-              value={phone}
-              onChangeText={handleChangePhone}
-            />
-          </Animated.View>
-          {phoneError && <Text style={styles.errorText}>Enter a valid 10-digit number</Text>}
-
-          <TouchableOpacity style={styles.button} onPress={handleSendOTP}>
-            <Text style={styles.buttonText}>Send OTP</Text>
-          </TouchableOpacity>
-        </>
-      ) : (
-        <Animated.View style={{ opacity: fadeAnim }}>
-          <Text style={styles.label}>Enter OTP</Text>
-          <Animated.View style={{ transform: [{ translateX: shakeAnim }] }}>
-            <TextInput
-              style={[
-                styles.input,
-                otp.length === 0
-                  ? styles.inputDefault
-                  : otpError
-                  ? styles.inputError
-                  : styles.inputValid,
-              ]}
-              placeholder="Enter 6-digit OTP"
-              keyboardType="number-pad"
-              maxLength={6}
-              value={otp}
-              onChangeText={handleChangeOtp}
-            />
-          </Animated.View>
-          {otpError && <Text style={styles.errorText}>OTP must be 6 digits</Text>}
-
-          <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-            <Text style={styles.buttonText}>Sign Up</Text>
-          </TouchableOpacity>
-        </Animated.View>
-      )}
+      <TouchableOpacity style={[styles.button, loading && { opacity: 0.7 }]} onPress={handleSignUp} disabled={loading}>
+        {loading ? <ThreeDotLoader /> : <Text style={styles.buttonText}>Sign Up</Text>}
+      </TouchableOpacity>
 
       <View style={styles.loginContainer}>
         <Text style={styles.loginText}>Already have an account?</Text>
@@ -193,6 +155,17 @@ export default function SignUpScreen() {
           <Text style={styles.loginLink}>Login</Text>
         </TouchableOpacity>
       </View>
+    </>
+  );
+};
+ 
+export default function SignUpScreen() {
+  return (
+    <View style={styles.container}>
+      <Image style={styles.logo} source={require("../assets/images/farmer-logo.png")} />
+      <Text style={styles.title}>Create an Account</Text>
+      <Text style={styles.subtitle}>Sign up to access exclusive farmer services.</Text>
+      <SignUpForm />
     </View>
   );
 }
@@ -208,7 +181,6 @@ const styles = StyleSheet.create({
     width: width - 70,
     height: 240,
     alignSelf: "center",
-    marginBottom: 0,
   },
   title: {
     fontSize: 24,
@@ -224,10 +196,11 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   label: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#444",
-    marginBottom: 6,
+    marginBottom: 5,
     marginTop: 10,
+    marginLeft: 1,
   },
   input: {
     borderWidth: 1,
@@ -250,7 +223,6 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 12,
     color: "red",
-    paddingHorizontal: 4,
     marginTop: 2,
   },
   button: {
@@ -282,4 +254,3 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
 });
-

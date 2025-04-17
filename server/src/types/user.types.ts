@@ -1,6 +1,5 @@
 interface IUser {
-    firstName: string;
-    lastName: string;
+    name: string;
     email?: string;
     phone?: string;
     password: string;
@@ -16,8 +15,7 @@ interface IUserCreate extends IUser {
 }
 
 interface IUserUpdate extends Partial<IUserCreate> {
-    firstName: string;
-    lastName: string;
+  name: string;
     email?: string;
     phone?: string;
     password: string;

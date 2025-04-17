@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { string } from "zod";
 
 const otpSchema = new mongoose.Schema({
     userId:{
@@ -7,9 +6,13 @@ const otpSchema = new mongoose.Schema({
         required:true
     },
     otp:{
-        type:string,
+        type:String,
         required:true
-    }
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+      },
 })
 
 const otpModel = mongoose.model("otp",otpSchema)

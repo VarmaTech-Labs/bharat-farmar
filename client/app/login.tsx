@@ -12,21 +12,27 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import * as Notifications from "expo-notifications";
+import { sendLoginOtp, userLogin } from "@/utils/api/userApis";
+import { showErrorDialog } from "@/utils/alertNotifier";
+import ThreeDotLoader from "@/components/ThreeDotLoader";
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "@/store/userSlice";
 
 const { width, height } = Dimensions.get("window");
 
 export default function LoginScreen() {
-  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
-  const [step, setStep] = useState<"phone" | "otp">("phone");
-  const [phoneBorderColor, setPhoneBorderColor] = useState("#ccc");
+  const [step, setStep] = useState<"email" | "otp">("email");
+  const [emailBorderColor, setEmailBorderColor] = useState("#ccc");
   const [otpBorderColor, setOtpBorderColor] = useState("#ccc");
-  const [phoneError, setPhoneError] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [otpError, setOtpError] = useState("");
-  const router = useRouter()
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const shakeAnim = new Animated.Value(0);
   const [notificationToken, setNotificationToken] = useState<string | null>(null);
-  
+  const dispatch  = useDispatch()
 
   const shakeInput = () => {
     Animated.sequence([
@@ -37,19 +43,19 @@ export default function LoginScreen() {
     ]).start();
   };
 
-  const handlePhoneChange = (text: string) => {
-    setPhone(text);
+  const handleEmailChange = (text: string) => {
+    setEmail(text);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (text.length === 0) {
-      setPhoneBorderColor("#ccc");
-      setPhoneError("");
-
-    } else if (/^\d{10}$/.test(text)) {
-      setPhoneBorderColor("green");
-      setPhoneError("");
+      setEmailBorderColor("#ccc");
+      setEmailError("");
+    } else if (emailRegex.test(text)) {
+      setEmailBorderColor("green");
+      setEmailError("");
       shakeInput();
     } else {
-      setPhoneBorderColor("red");
-      setPhoneError("Enter a valid 10-digit number");
+      setEmailBorderColor("red");
+      setEmailError("Enter a valid email address");
     }
   };
 
@@ -67,34 +73,61 @@ export default function LoginScreen() {
     }
   };
 
-  const handleSendOTP = async() => {
-    if (phone.length !== 10) {
-      setPhoneBorderColor("red");
-      setPhoneError("Please enter a valid 10-digit mobile number");
+  const handleSendOTP = async () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+      setEmailBorderColor("red");
+      setEmailError("Please enter a valid email address");
       shakeInput();
       return;
     }
-    setStep("otp");
-    setPhoneBorderColor("#ccc");
-    setPhoneError(""); 
-    const token = (await Notifications.getExpoPushTokenAsync()).data;
-   Alert.alert(token); 
+
+    setLoading(true);
+    const response = await sendLoginOtp(email);
+
+    if (response.success) {
+      const token = (await Notifications.getExpoPushTokenAsync()).data;
+      setNotificationToken(token);
+       setLoading(false);
+      setStep("otp");
+      setEmailBorderColor("#ccc");
+      setEmailError("");
+    } else {
+      setEmailBorderColor("red");
+      shakeInput();
+      setLoading(false);
+
+      showErrorDialog("Failed to Send OTP", response.message);
+    }
   };
 
-  const handleVerifyOTP = () => {
+  const handleVerifyOTP = async () => {
     if (otp.length !== 6) {
       setOtpBorderColor("red");
       setOtpError("Please enter a valid 6-digit OTP");
       shakeInput();
       return;
     }
-    Alert.alert("Login Successful");
-    router.push("/home" as any);
+
+    setLoading(true);
+    const response = await userLogin(email, otp, notificationToken || "");
+    
+    if (response.success) {
+      dispatch(loginSuccess(response.data))
+      setLoading(false);
+      setOtpBorderColor("#ccc");
+      setOtpError("");
+      router.push("/home" as any);
+    } else {
+      setOtpBorderColor("red");
+      shakeInput();
+      setLoading(false);
+      showErrorDialog("Login Failed", response.message);
+    }
   };
 
-
-
- async function registerForPushNotificationsAsync() {
+  async function registerForPushNotificationsAsync() {
     const { status } = await Notifications.getPermissionsAsync();
     if (status !== "granted") {
       const { status: newStatus } = await Notifications.requestPermissionsAsync();
@@ -103,11 +136,10 @@ export default function LoginScreen() {
         return;
       }
     }
- 
   }
-  
+
   useEffect(() => {
-    registerForPushNotificationsAsync();  
+    registerForPushNotificationsAsync();
   }, []);
 
   return (
@@ -116,26 +148,29 @@ export default function LoginScreen() {
 
       <Text style={styles.title}>Sign in to Bharat Farmer</Text>
       <Text style={styles.subtitle}>
-        Securely log in using your mobile number and start exploring farmer services.
+        Securely log in using your email and start exploring farmer services.
       </Text>
 
-      {step === "phone" ? (
+      {step === "email" ? (
         <>
-          <Text style={styles.label}>Mobile Number</Text>
+          <Text style={styles.label}>Email Address</Text>
           <Animated.View style={{ transform: [{ translateX: shakeAnim }] }}>
             <TextInput
-              style={[styles.input, { borderColor: phoneBorderColor }]}
-              placeholder="Enter your phone number"
-              keyboardType="number-pad"
-              maxLength={10}
-              value={phone}
-              onChangeText={handlePhoneChange}
+              style={[styles.input, { borderColor: emailBorderColor }]}
+              placeholder="Enter your email"
+              keyboardType="email-address"
+              value={email}
+              onChangeText={handleEmailChange}
             />
-            {phoneError ? <Text style={styles.inputError}>{phoneError}</Text> : null}
+            {emailError ? <Text style={styles.inputError}>{emailError}</Text> : null}
           </Animated.View>
 
-          <TouchableOpacity style={styles.button} onPress={handleSendOTP}>
-            <Text style={styles.buttonText}>Send OTP</Text>
+          <TouchableOpacity style={styles.button} onPress={handleSendOTP} disabled={loading}>
+            {loading ? (
+              <ThreeDotLoader />
+            ) : (
+              <Text style={styles.buttonText}>Send OTP</Text>
+            )}
           </TouchableOpacity>
         </>
       ) : (
@@ -153,13 +188,16 @@ export default function LoginScreen() {
             {otpError ? <Text style={styles.inputError}>{otpError}</Text> : null}
           </Animated.View>
 
-          <TouchableOpacity style={styles.button} onPress={handleVerifyOTP}>
-            <Text style={styles.buttonText}>Verify and Continue</Text>
+          <TouchableOpacity style={styles.button} onPress={handleVerifyOTP} disabled={loading}>
+            {loading ? (
+              <ThreeDotLoader />
+            ) : (
+              <Text style={styles.buttonText}>Verify and Continue</Text>
+            )}
           </TouchableOpacity>
         </>
       )}
 
-      {/* Sign Up Option */}
       <View style={styles.signupContainer}>
         <Text style={styles.signupText}>Don't have an account?</Text>
         <TouchableOpacity onPress={() => router.push("/signup" as any)}>
@@ -194,14 +232,15 @@ const styles = StyleSheet.create({
     color: "#6C6C6C",
     textAlign: "center",
     marginBottom: 30,
-    paddingHorizontal:18,
-    lineHeight:22
+    paddingHorizontal: 18,
+    lineHeight: 22,
   },
   label: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#444",
-    marginBottom: 6,
+    marginBottom: 5,
     marginTop: 10,
+    marginLeft: 1,
   },
   input: {
     borderWidth: 1,
@@ -224,6 +263,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     width: "100%",
     marginTop: 20,
+    alignItems: "center",
   },
   buttonText: {
     color: "#fff",

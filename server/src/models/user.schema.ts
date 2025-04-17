@@ -2,27 +2,19 @@ import mongoose from "mongoose";
 import { IUser } from "../types/user.types.js";
 
 const userSchema = new mongoose.Schema<IUser>({
-     firstName: {
+     name: {
         type: String,
         required: false,
     },
-    lastName: {
-        type: String,
-        required: false,
-    },
+   
     email: {
         type: String,
-        required: false,
+        required: true,
         unique: true,
     },
     phone: {
         type: String,
         required: false,
-        unique: true,
-    },
-    password: {
-        type: String,
-        required: true,
     },
     profilePicture: {
         type: String,
@@ -35,7 +27,7 @@ const userSchema = new mongoose.Schema<IUser>({
     isVerified: {
         type: Boolean,
         default: false,
-    },
+    }
 })
 
 const userModel = mongoose.models.User || mongoose.model<IUser>("User", userSchema);

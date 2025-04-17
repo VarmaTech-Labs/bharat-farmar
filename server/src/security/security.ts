@@ -2,10 +2,9 @@ import { Application } from 'express';
 import helmet from 'helmet';
 import cors, { CorsOptions } from 'cors';
 import hpp from 'hpp';
-import xssClean from 'xss-clean';
-import mongoSanitize from 'express-mongo-sanitize';
+// import mongoSanitize from 'express-mongo-sanitize';
 import rateLimit from 'express-rate-limit';
-import slowDown from 'express-slow-down';
+// import slowDown from 'express-slow-down';
 import compression from 'compression';
  
 const corsOptions: CorsOptions = {
@@ -22,11 +21,11 @@ const rateLimiter = rateLimit({
   message: 'Too many requests, please try again later.',
 });
 
-const slowDownMiddleware = slowDown({
-  windowMs: 5 * 60 * 1000,
-  delayAfter: 100,
-  delayMs: 500,
-});
+// const slowDownMiddleware = slowDown({
+//   windowMs: 5 * 60 * 1000,
+//   delayAfter: 100,
+//   delayMs:()=> 500,
+// });
 
 const configureSecurity = (app: Application): void => {
   app.disable('x-powered-by');
@@ -60,11 +59,14 @@ const configureSecurity = (app: Application): void => {
 
   app.use(cors(corsOptions));
   app.use(hpp());
-  app.use(xssClean());
-  app.use(mongoSanitize());
-  app.use(compression());
   app.use(rateLimiter);
-  app.use(slowDownMiddleware);
+
+    app.use(compression());
+    // app.use(mongoSanitize({
+    //   action: 'replace' as any,
+    //   replaceWith: '_',
+    // }));
+    // app.use(slowDownMiddleware);
 };
 
 export default configureSecurity;

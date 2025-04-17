@@ -1,5 +1,5 @@
 export const generateOtp = () =>{
-   const otp = Math.round((Math.random()*999999)+1) 
+   const otp = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
    return otp
 }
 

@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer"
 
-const mailConfiguration = ()=>{
+const mailConfiguration = async() =>{
   const transpoter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
@@ -11,7 +11,7 @@ const mailConfiguration = ()=>{
     }
   })
 
-  transpoter.verify().then(()=>{
+ await transpoter.verify().then(()=>{
     console.log("📧 mail server is ready to take our messages")
   }).catch((err)=>{
     console.log(err)

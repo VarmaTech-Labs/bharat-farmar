@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor, store } from '@/store/store';
+import { AlertNotificationRoot } from "react-native-alert-notification"
 
 getApp();
 
@@ -110,15 +111,23 @@ export default function Layout() {
   }, []);
 
   return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
+    <AlertNotificationRoot
+    dialogConfig={{
+      closeOnOverlayTap: true,
+    }}
+  >
 
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="index" />
-      <Stack.Screen name="login" />
-    </Stack>
-   </PersistGate>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
 
-    </Provider>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="login" />
+          </Stack>
+        </PersistGate>
+
+      </Provider>
+    </AlertNotificationRoot>
+
   );
 }

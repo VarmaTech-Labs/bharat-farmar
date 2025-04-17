@@ -7,7 +7,7 @@ const congratutionTemplate = (name: string) => {
     <!-- Google Font: Roboto for English content -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   </head>
-  <body style="font-family: Arial, sans-serif; background-color: #f5f7fa; padding: 20px; color: #333;">
+  <body style="font-family: Arial, sans-serif; background-color: #f5f7fa; padding: 0px; color: #333;">
     <div style="max-width: 600px; margin: auto; background-color: white; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); overflow: hidden;">
       
       <!-- Header -->
@@ -17,8 +17,8 @@ const congratutionTemplate = (name: string) => {
       </div>
 
       <!-- Body -->
-      <div style="padding: 20px;">
-        <p>प्रिय ${name} जी,</p>
+      <div style="padding:5px;">
+        <p>प्रिय <b>${name}</b> जी,</p>
 
         <p>
           🎉 आपको ढेरों बधाई! आपने <strong>Bharat Farmer</strong> ऐप में रजिस्टर करके एक समझदारी भरा कदम उठाया है। 
@@ -62,7 +62,7 @@ const congratutionTemplate = (name: string) => {
         </p>
 
         <p>जय जवान, जय किसान 🇮🇳<br/>
-<strong style="margin-top:5px; font-size:15px; display: inline-block; font-family: 'Roboto', Arial, sans-serif; color: #555;">– टीम Bharat Farmer</strong>
+<strong style="margin-top:4px; margin-left:8px;  font-size:12px; display: inline-block; font-family: 'Roboto', Arial, sans-serif; color: #555;">टीम Bharat Farmer</strong>
 
         </p>
       </div>
