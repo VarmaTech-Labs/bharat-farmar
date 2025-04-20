@@ -31,7 +31,7 @@ export const userSignup = async (userData: any): Promise<ApiResponse> => {
 // 🔹 Send OTP for Login
 export const sendLoginOtp = async (email: string): Promise<ApiResponse> => {
   try {
-    const res = await axiosClient.post(`/api/users/login`, { email });
+    const res = await axiosClient.post(`/api/users/request-otp`, { email });
 
     return {
       success: true,
@@ -56,7 +56,7 @@ export const userLogin = async (
   notificationToken: string
 ): Promise<ApiResponse> => {
   try {
-    const res = await axiosClient.post(`/api/users/login`, {
+    const res = await axiosClient.post(`/api/users/verify-otp`, {
       email,
       otp,
       notificationToken,

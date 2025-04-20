@@ -1,8 +1,9 @@
 import express, { IRouter } from 'express';
-import { login, signup } from '../../controllers/users/user.controllers.js';
+import { requestOtp, signup, verifyOtp } from '../../controllers/users/user.controllers.js';
 const userRouter:IRouter = express.Router();
 
 userRouter.post("/signup",signup);
-userRouter.post("/login",login);
+userRouter.post("/request-otp", requestOtp);
+userRouter.post("/verify-otp", verifyOtp);
 export default userRouter;
 
