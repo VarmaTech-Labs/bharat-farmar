@@ -17,6 +17,10 @@ const userSchema = new mongoose.Schema<IUser>({
         type: String,
         required: false,
     },
+    address: {
+        type: String,
+        required: false,
+    },
     profilePicture: {
         type: String,
         required: false,

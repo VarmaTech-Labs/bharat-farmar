@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Animated, View } from "react-native";
+import React from "react";
 
-// ✅ Loader
+
 const ThreeDotLoader = () => {
   const [dotAnim1] = useState(new Animated.Value(0));
   const [dotAnim2] = useState(new Animated.Value(0));

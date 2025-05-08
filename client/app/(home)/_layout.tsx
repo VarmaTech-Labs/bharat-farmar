@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons ,Feather} from '@expo/vector-icons';
 import {
     View,
     StyleSheet,
@@ -13,13 +13,13 @@ const getIconName = (routeName: string): keyof typeof Ionicons.glyphMap => {
     switch (routeName) {
         case 'home':
             return 'home-outline';
-        case 'service':
+        case 'explore':
             return 'grid-outline';
         case 'search':
             return 'search-outline';
         case 'camera':
             return 'camera';
-        case 'chat':
+        case 'connect':
             return 'chatbubble-ellipses-outline';
         case 'news':
             return 'newspaper-outline';
@@ -100,6 +100,21 @@ export default function Layout() {
                 tabBarIcon: ({ color }) => {
                     const iconName = getIconName(route.name);
                     const isCamera = route.name === 'camera';
+                    const isConnect = route.name === 'connect';
+                    const isBazaar = route.name === 'bazaar';
+
+                    if (isBazaar) {
+                        return (
+                            < Feather name="bold" size={20} color={color} />
+                        );
+                    }
+
+                    if (isConnect) {
+                        return (
+                            <MaterialIcons name="connect-without-contact" size={20} color={color} />
+
+                        );
+                    }
 
                     if (isCamera) {
                         return (
@@ -114,11 +129,11 @@ export default function Layout() {
             })}
             >
             <Tabs.Screen name="home" options={{ headerShown: false, title: 'Home' }} />
-            <Tabs.Screen name="service" options={{ headerShown: false, title: 'Service' }} />
-            <Tabs.Screen name="search" options={{ headerShown: false, title: 'Search' }} />
+            <Tabs.Screen name="explore" options={{ headerShown: false, title: 'Explore' }} />
+            <Tabs.Screen name="bazaar" options={{ headerShown: false, title: 'Bazaar' }} />
             <Tabs.Screen name="camera" options={{ headerShown: false, title: '' }} />
             <Tabs.Screen name="news" options={{ headerShown: false, title: 'News' }} />
-            <Tabs.Screen name="chat" options={{ headerShown: false, title: 'Chat' }} />
+            <Tabs.Screen name="connect" options={{ headerShown: false, title: 'Connect' }} />
             <Tabs.Screen name="profile" options={{ headerShown: false, title: 'Profile' }} />
         </Tabs>
     );

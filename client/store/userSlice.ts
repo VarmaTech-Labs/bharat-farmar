@@ -19,7 +19,7 @@ const userSlice = createSlice({
     userUpdate:(state,action)=>{
        state.user= action.payload
     },
-    logout:(state,_action)=>{
+    logout:(state)=>{
       state.user = null,
       state.isLoggedIn=false
       state.refreshToken = null; 

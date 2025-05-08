@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { SafeAreaView, StatusBar, View, ActivityIndicator } from "react-native";
 import { useSelector } from "react-redux";
 import { useRouter } from "expo-router";
-import OnboardingScreen from "@/components/OnboardingScreen";
+import OnboardingScreen from "@/screens/OnboardingScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import React from "react";
 
 export default function Index() {
   const [isOnboarding, setIsOnboarding] = useState<boolean | null>(null);

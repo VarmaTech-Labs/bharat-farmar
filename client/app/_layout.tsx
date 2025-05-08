@@ -3,12 +3,14 @@ import { Camera } from 'expo-camera';
 import * as Notifications from 'expo-notifications';
 import * as Location from 'expo-location';
 import messaging from '@react-native-firebase/messaging';
-import { getApp } from '@react-native-firebase/app';
+import { getApp }  from '@react-native-firebase/app';
 import { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor, store } from '@/store/store';
 import { AlertNotificationRoot } from "react-native-alert-notification"
+import React from 'react'; 
+
 
 getApp();
 

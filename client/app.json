@@ -38,7 +38,8 @@
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
+          "imageWidth": 340,
+          "imageHeight": 340,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
@@ -48,6 +49,12 @@
         {
           "androidAppId": "ca-app-pub-3008955716205798~7198932777",
           "iosAppId": "ca-app-pub-3008955716205798~7198932777"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
       ]
     
