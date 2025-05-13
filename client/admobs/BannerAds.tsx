@@ -6,7 +6,7 @@ const { width } = Dimensions.get("window");
 
 const BANNER_AD_UNIT_ID: string = __DEV__ ? TestIds.BANNER : "YOUR_BANNER_AD_UNIT_ID";
 
-const BannerAds: React.FC = () => {
+const BannerAds: React.FC = ({position}:any) => {
   return (
     <View style={styles.adContainer}>
       <BannerAd
@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
     width: width,
     alignItems: "center",
     backgroundColor: "#f9f9f9", 
+ 
   },
 });
 
